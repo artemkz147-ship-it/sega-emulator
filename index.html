@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sega Mega Drive 2 Эмулятор</title>
+    
+    <meta name="description" content="Играть в классические игры Sega Mega Drive 2 онлайн. Эмулятор Сега прямо в браузере, ретро-игры бесплатно.">
+    <meta name="keywords" content="sega, эмулятор сега, играть онлайн, ретро игры, mega drive 2, comix zone, mortal kombat">
+    <meta name="robots" content="index, follow">
+    <meta name="google-site-verification" content="ТВОЙ_КОД_ПОДТВЕРЖДЕНИЯ_ОТ_GOOGLE" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sega-blue: #0033A0;
+            --sega-red: #E00024;
+            --bg-dark: #111;
+            --panel-bg: #222;
+            --text-light: #eee;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Шапка сайта */
+        header {
+            background: linear-gradient(90deg, #000 0%, var(--sega-blue) 50%, #000 100%);
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--sega-red);
+            box-shadow: 0 4px 15px rgba(224, 0, 36, 0.3);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 0px var(--sega-red);
+            letter-spacing: 2px;
+        }
+
+        /* Основной контейнер */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Боковая панель со списком игр */
+        .sidebar {
+            width: 350px;
+            background-color: var(--panel-bg);
+            border-right: 2px solid #333;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Карточка игры */
+        .game-card {
+            background-color: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            gap: 15px;
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 51, 160, 0.5);
+            border-color: var(--sega-blue);
+        }
+
+        .game-card.active {
+            border-color: var(--sega-red);
+            background-color: #444;
+            box-shadow: 0 0 15px rgba(224, 0, 36, 0.5);
+        }
+
+        .game-cover {
+            width: 80px;
+            height: 110px;
+            background-color: #000;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .game-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .game-info p {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* Контейнер эмулятора */
+        .emulator-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #2a2a2a 0%, #000000 100%);
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            background-color: #000;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 2px solid #444;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Заглушка, когда игра не выбрана */
+        .placeholder {
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            color: #555;
+            line-height: 1.5;
+            width: 100%;
+            margin-top: 200px;
+        }
+
+        /* Адаптация под мобильные устройства (телефоны) */
+        @media (max-width: 800px) {
+            .main-container {
+                flex-direction: column-reverse;
+            }
+            .sidebar {
+                width: 100%;
+                height: 40%;
+                border-right: none;
+                border-top: 2px solid #333;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+            .game-card {
+                min-width: 250px;
+            }
+            .emulator-container {
+                height: 60%;
+                padding: 0;
+            }
+            .game-wrapper {
+                height: 100%;
+                border-radius: 0;
+                border: none;
+            }
+            #game {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SEGA PORTAL</h1>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar" id="game-list">
+            </div>
+
+        <div class="emulator-container">
+            <div class="game-wrapper" id="game-wrapper">
+                <div id="game">
+                    <div class="placeholder" id="placeholder-text">
+                        ВЫБЕРИТЕ ИГРУ<br>ДЛЯ НАЧАЛА
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // НАСТРОЙКА БИБЛИОТЕКИ ИГР
+        // Имена файлов точно как у тебя на компьютере (с пробелами)
+        // ==========================================
+        const games = [
+            {
+                id: 'comix',
+                title: 'Comix Zone',
+                genre: 'Экшен / Beat em up',
+                romUrl: 'roms/Comix Zone.gen',       
+                coverUrl: 'covers/Comix Zone.jpg'         
+            },
+            {
+                id: 'umk3',
+                title: 'Ultimate Mortal Kombat 3',
+                genre: 'Файтинг',
+                romUrl: 'roms/Ultimate Mortal Kombat 3.gen', 
+                coverUrl: 'covers/Ultimate Mortal Kombat 3.jpg'          
+            }
+        ];
+
+        const gameListElement = document.getElementById('game-list');
+
+        // Генерация списка игр в боковой панели
+        function renderGameList() {
+            games.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.id = `card-${game.id}`;
+                card.onclick = () => loadGame(game);
+
+                card.innerHTML = `
+                    <img src="${game.coverUrl}" alt="${game.title}" class="game-cover" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'80\\' height=\\'110\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23555\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'white\\' text-anchor=\\'middle\\' alignment-baseline=\\'middle\\' font-family=\\'sans-serif\\' font-size=\\'12\\'>Нет фото</text></svg>'">
+                    <div class="game-info">
+                        <h3>${game.title}</h3>
+                        <p>${game.genre}</p>
+                    </div>
+                `;
+                gameListElement.appendChild(card);
+            });
+        }
+
+        // Функция загрузки игры
+        function loadGame(game) {
+            // Подсветка активной карточки
+            document.querySelectorAll('.game-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`card-${game.id}`).classList.add('active');
+
+            // Полностью пересоздаем блок эмулятора, чтобы сбросить старую игру
+            const gameWrapper = document.getElementById('game-wrapper');
+            gameWrapper.innerHTML = '<div id="game"></div>'; 
+
+            // Настройки ядра EmulatorJS
+            window.EJS_player = '#game';
+            window.EJS_core = 'sega'; 
+            window.EJS_gameUrl = game.romUrl; 
+            window.EJS_color = '#E00024'; 
+            window.EJS_startOnLoaded = true;
+            window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
+
+            // Удаляем старый скрипт, если он есть
+            const oldScript = document.getElementById('ejs-script');
+            if (oldScript) {
+                oldScript.remove();
+            }
+
+            // Запускаем скрипт заново
+            const script = document.createElement('script');
+            script.id = 'ejs-script';
+            script.src = 'https://cdn.emulatorjs.org/stable/data/emulator.js';
+            document.body.appendChild(script);
+        }
+
+        window.onload = renderGameList;
+    </script>
+</body>
+</html>
